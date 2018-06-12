@@ -1,0 +1,327 @@
+---
+title: "Lab 2"
+author: "James Beck, Colby Carter, Andrew Lam"
+date: "10/23/2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=4, tidy.opts=list(width.cutoff=60),tidy=TRUE)
+#install.packages("ordinal")
+library(knitr)
+library(BSDA)
+library(car)
+library(Hmisc)
+library(sandwich)
+library(stargazer)
+library(gridExtra)
+library(dplyr)
+library(ggplot2)
+library(nnet)
+library(ordinal)
+```
+
+
+# 1. Introduction
+
+In this report, our team seeks to predict the contribution dollar bucket in which our sample alumni preside based on potential explanatory variables such as gender, class year, area of degree and study, and recent university contributions and participation. In order to maximize this predictive power, we test two sets of variables in multinomial logistic regressions, as well as consider the usefulness of a similar ordered logistic regression. Because we are skeptical of there being proportional odds between the given contribution buckets, we see history of prior giving using the multinomial model to be most predictive, though with its own limitations.
+
+
+# 2. Data Examination and EDA
+
+The provided dataset contains 1,000 observations of sampled university graduates spanning five decades of classes, spanning from 1972 to 2012. Included in the dataset are an ID number $X$, gender, marital status, an indicator of whether the alumnus attended a recent university event, his or her major and advanced degree (if applicable), and the annual individual donation amounts from 2012 to 2016; there are no missing values in any of these cells, nor any contribution amounts that would suggest entry errors.
+
+## Univariate Analysis & Transformations
+
+```{r}
+data <- read.csv("lab2data.csv")
+str(data)
+head(data, 5)
+data$Class.Year <- factor(data$Class.Year)
+data$AttendenceEvent <- factor(data$AttendenceEvent, levels = c(0,1), labels = c("Not Attend","Attend"))
+data$Gender <- factor(data$Gender, levels = c("M","F"), labels = c("Male","Female"))
+data$Marital.Status <- factor(data$Marital.Status, levels = c("M","S","D","W"), 
+                              labels = c("Married","Single","Divorced","Widowed"))
+data$FY16GivingCat <- cut(data$FY16Giving, breaks=c(0,1,100,250,500,20000), right = F,
+                  labels=c("[0,1)","[1,100)","[100,250)","[250,500)","[500,20000)"))
+```
+
+Beginning with the demographic and alumni type factor variables, we see a sample of 1,000 graduates who are approximately evenly split by gender and mostly married, with a class size that increases for each sample year (decade). We also see that a majority of the sample attended the recent alumni event, indicating support for the university post-graduation.
+```{r}
+describe(data[c("Gender","Class.Year","Marital.Status","AttendenceEvent")])
+data$Marital.Status <- relevel(data$Marital.Status, ref = "Married")
+```
+
+By generating some key descriptive statistics and a histogram of the contributions, we can garner some important insights into the distribution of the variable that we will be attempting to model, *FY16Giving*. Most notably, the shape of the histogram indicates a distribution that is heavily skewed toward a contribution of 0. From this we can see the benefit of modeling the contribution variable as a set of contribution tiers rather than as a continuous variable. 
+
+```{r, fig.height = 3, fig.width = 8}
+describe(data$FY16Giving)
+par(mfrow = c(1,2))
+hist(data$FY16Giving, breaks = c(250*0:60-1), main = "2016 Alumni Contributions", 
+     col = "cadetblue", xlab = "Giving ($)")
+hist(data$FY16Giving[data$FY16Giving < 500], breaks = c(50*0:11-49), main = "Less than $500 only",
+     col = "cadetblue", xlab = "Giving ($)")
+```
+
+By bucketing the data into the categories shown in the barplot below, it can be seen that the data is still very much skewed towards the non-contributor category, but if our ultimate goal is to be able to build a model that can help us differentiate between alumni that will and will not donate, then this categorization of the dependent variable will serve that purpose better.
+
+```{r, fig.height = 3, fig.width = 8}
+barplot(prop.table(table(data$FY16GivingCat)), main = "2016 Giving", xlab = "Giving Amounts ($)", 
+        ylab = "Relative Frequency", col = "cadetblue")
+```
+
+We opt to consolidate our *degree* buckets categorization somewhat to collapse the data into a smaller number of manageable categories. Most notably we recategorize degrees with a very small representation in the data as 'Other' and maintain distinction between the more majorly represented degrees (e.g. MA, MS, MBA, PHD). In doing so we can see from the barplot below that the 'None' category actually represents a large chunk of the total data, but otherwise there is fairly even distribution across the categories.
+
+```{r, fig.height = 3, fig.width = 8}
+degrees <- data.frame(table(data$Next.Degree))
+colnames(degrees) <- c("degree","freq")
+degrees[which(degrees$freq > 30),]
+degree_buckets <- function(deg){
+  if(deg %in% c("JD","PHD","NONE","MBA","NDA")) {deg}
+  else if(substr(deg,1,2) == "MA") {"MA"}
+  else if(substr(deg,1,2) == "MS") {"MS"}
+  else if(substr(deg,1,2) == "MD") {"MD"}
+  else {"Other"}
+}
+data$degree_bucket <- factor(apply(data["Next.Degree"], 1, degree_buckets))
+barplot(prop.table(table(data$degree_bucket)), xlab = "Degrees", 
+        ylab = "Relative Frequency", col = "cadetblue")
+data$degree_bucket <- relevel(data$degree_bucket, ref = "NONE")
+```
+
+A similar technique is applied to the *major* variable in the data set to consolidate categories.
+
+```{r}
+majors <- data.frame(table(data$Major))
+colnames(majors) <- c("major","freq")
+majors[which(majors$freq > 30),]
+major_buckets <- function(maj){
+  maj <- tolower(maj)
+  if(grepl("economics", maj)) {"Economics"}
+  else if(maj %in% c("chinese","french","german","russian","spanish")) {"Foreign Language"}
+  else if(grepl("history", maj) | maj == "american studies") {"History"}
+  else if(maj == "english") {"English"}
+  else if(maj %in% c("biology","chemistry","physics","math") | grepl("general science", maj)) {"Math & Science"}
+  else if(grepl("sociolog", maj) | grepl("psych", maj) | grepl("anthro", maj)) {"Social Science"}
+  else if(grepl("political sci", maj) | grepl("pol. sci", maj)) {"Political Science"}
+  else if(maj %in% c("art","music","theatre")) {"Arts & Music"}
+  else if(grepl("phil", maj) | grepl("relig", maj)) {"Philosophy & Religion"}
+  else {"Other"}
+}
+data$major_bucket <- factor(apply(data["Major"], 1, major_buckets))
+table(data$major_bucket)
+data$major_bucket <- relevel(data$major_bucket, ref = "Math & Science")
+```
+
+In an effort to summarize information from the previous years, we construct a new variable that describes how many years a particular contributor has donated. The major bucket is 0 years - this is not seen as a surprise given our previous observation that the majority of potential contributors did not donate any money in 2016. What is interesting to note is that the second largest category is the 4 years category. This implies that those who give tend to be consistent in contributing.
+
+```{r, fig.height = 3, fig.width=8}
+pre16_giving <- c("FY12Giving", "FY13Giving", "FY14Giving", "FY15Giving")
+data$pre16_give_cnt <- factor(apply(data[pre16_giving] != 0, 1, sum))
+barplot(prop.table(table(data$pre16_give_cnt)), xlab = "Contribution Years", 
+        ylab = "Relative Frequency", main = "Years of Previous Giving", col = "cadetblue")
+```
+
+```{r, fig.height = 3, fig.width=8}
+data$pre16_giving <- rowSums(data[,pre16_giving])
+data$pre16_bin <- cut(data$pre16_giving, breaks=c(0,1,100,250,500,2000000), right = F,
+                      labels=c("[0,1)","[1,100)","[100,250)","[250,500)","[500,+)"))
+barplot(prop.table(table(data$pre16_bin)), xlab = "Total Contribution ($)", col = "cadetblue", 
+        ylab = "Relative Frequency", main = "Total Contributions from 2012-2015")
+```
+
+## Bivariate Relationships with Dependent Variable
+
+Examining the relationship between gender and contribution category we can see that the breakdown of representation in the different contribution categories is fairly similar across genders. There is a somewhat notable difference between the representation in the [1,100) and the [100,250) categories in that a greater percentage of females are present in the [1,100) category while there are a greater percentage of males in the [100,250) category.
+
+```{r, fig.height = 3, fig.width=8}
+table(data$Gender, data$FY16GivingCat)
+barplot(prop.table(table(data$Gender, data$FY16GivingCat),1), 
+        col=rainbow(length(levels(data$Gender))), 
+        beside=TRUE, main = "Giving by Gender", ylab = "Relative Frequency")
+legend("topright", legend=levels(data$Gender), 
+       fill=rainbow(length(levels(data$Gender))))
+```
+
+Examining the relationship between class year and our categorical contribution variable offers some interesting insights as well. Namely the older the class year seemingly the more likely the person is to donate. This is not terribly surprising given that more recent graduates would not be expected to have the sort of discretionary income that would allow them to donate to their alma mater. If the 2012 class does donate, they tend to stick to the [1,100) category. Again, this is likely due to having less to donate. The other class years instead tend to contribute in the higher tiers.
+
+```{r, fig.height = 3, fig.width=8}
+table(data$Class.Year, data$FY16GivingCat, dnn = c("Class Year","2016 Giving Bin"))
+barplot(prop.table(table(data$Class.Year, data$FY16GivingCat),1), 
+        col=rainbow(length(levels(data$Class.Year))), 
+        beside=TRUE, main = "Giving by Class Year", ylab = "Relative Frequency")
+legend("topright", legend=levels(data$Class.Year), 
+       fill=rainbow(length(levels(data$Class.Year))))
+```
+
+Marital status has a very interesting breakdown as shown in the count table and barplot below. Married and Single alumni heavily dominate the population as shown in the table, but the bar plot gives a little more insight into how the marital status might help indicate whether an alum has donated or not. One thing we note is that within the Single category there are many more alum in the non-contributor category relative to the other marital statuses. We imagine that this could be a result of a factor discussed in our exploration of class year. Younger alum are also more likely to be single and would potentially not contribute for the same reason: lack of discretionary income. Widowed alum exhibit a very interesting breakdown in this visualization as well. Their overall representation with the alum population is quite small, but widowed alum are far more likely to contribute significantly than the other marital categories. We expect that, again, this could simply be related to age. Widows are more likely to be older and in turn more likely to have discretionary income to donate.
+
+```{r, fig.height = 3, fig.width=8}
+table(data$Marital.Status, data$FY16GivingCat)
+barplot(prop.table(table(data$Marital.Status, data$FY16GivingCat),1),
+        col=rainbow(length(levels(data$Marital.Status))), beside=TRUE, 
+        main = "Giving by Marital Status", ylab = "Relative Frequency")
+legend("topright", legend=levels(data$Marital.Status), 
+       fill=rainbow(length(levels(data$Marital.Status))))
+```
+
+Event attendance is a fairly unsurprising categorical variable. As seen in the chart below, the proportion of alumni that donate if they have previously attended an event is notably greater than the proportion of alumni that dontate if they have not previously attended an event. This observation points to the inclusion of the event attendance variable in our eventual modeling.
+
+```{r, fig.height = 3, fig.width=8}
+table(data$AttendenceEvent, data$FY16GivingCat)
+barplot(prop.table(table(data$AttendenceEvent, data$FY16GivingCat),1), 
+        col=rainbow(length(levels(data$AttendenceEvent))), beside=TRUE, 
+        main = "Giving by Event Attendance Status", ylab = "Relative Frequency")
+legend("topright", legend=levels(data$AttendenceEvent), 
+       fill=rainbow(length(levels(data$AttendenceEvent))))
+```
+
+Considering our created major buckets, we might expect different areas of study--corresponding to different income or philanthropic tendencies--to affect amount of giving back to the university. We see some possible evidence that the arts, english and economics correspond to less giving than other majors, but these differences do not appear to be large.
+```{r}
+round(prop.table(table(data$major_bucket,data$FY16GivingCat),1),3) 
+```
+
+When looking at advanced degree, on the other hand, we see larger differences in giving versus non-giving bins. In particular, those with "NONE" appear least likely to contribute while those alumni with masters of science ("MS"), in law ("JD"), or with PhDs to be most likely contributors, and correspondingly, likely the wealthiest graduates.
+```{r}
+round(prop.table(table(data$degree_bucket,data$FY16GivingCat),1),3)
+```
+
+Meanwhile, it stands to reason that previous giving can be a strong predictor of future giving, and looking at the frequency of the count of annual donations between 2012 and 2015 confirms this: those who did not give at all previously also make up the largest segment of those who did not contribute in 2016. Similarly, those who previously gave all four years appear more likely to fall in one of the giving buckets.
+```{r, fig.height=3, fig.width=8}
+barplot(table(data$pre16_give_cnt, data$FY16GivingCat), xlab = "2016 Giving", 
+        col=rainbow(length(levels(data$pre16_give_cnt))), beside=TRUE, 
+        main = "Count of Previous Donations", ylab = "Frequency")
+legend("topright", legend=levels(data$pre16_give_cnt), 
+       fill=rainbow(length(levels(data$pre16_give_cnt))))
+barplot(prop.table(table(data$pre16_give_cnt, data$FY16GivingCat),1),
+        col=rainbow(length(levels(data$pre16_give_cnt))), beside=TRUE, 
+        main = "Within Donation Count Group",
+        ylab = "Relative Frequency", xlab = "2016 Giving")
+legend("topright", legend=levels(data$pre16_give_cnt),
+        fill=rainbow(length(levels(data$pre16_give_cnt))))
+```
+
+## Bivariate Relationships between Independent Variables
+
+We consider the distribution of genders amongst different degrees and majors in an effort to better understand both variables. In particular we would like to look for anything that may inadvertently create a collinearity concern in our modelling.
+
+As an example, we can see that the proportion of married frequency decreases with increasing class year. This will be something to keep in mind as we consider both variables in our models as finding significance in marital status as a predictor could be intertwined with the effect of class year.
+```{r}
+round(prop.table(table(data$Class.Year,data$Marital.Status),1),3)
+```
+
+Similarly, choice of major and degree tends to vary widely by gender, with males dominating econometrics degrees and MBAs, and females having majorities in English, language, social science and non-business masters degrees.
+```{r}
+round(prop.table(table(data$major_bucket,data$Gender),1),3)
+```
+```{r}
+round(prop.table(table(data$degree_bucket,data$Gender),1),3)
+```
+
+## Interaction Effects
+
+We consider several potential interaction effects, as well as the possibility that certain factor variables are not independent of each other, such as major and gender. We might expect event attendence to wane over time with contribution likelihood to be higher for earlier class years; however, actual differences appear to be mixed, for example with 2002 alumni more likely to contribute when they *didn't* attend.
+```{r}
+round(prop.table(table(data$Class.Year,data$FY16GivingCat,data$AttendenceEvent),1),3) 
+```
+
+It's also possible that the genders contribute in different proportions depending on their marital status. But looking at the contingency table by contribution bin, there do not appear to be large diferences by gender.
+```{r}
+round(prop.table(table(data$Marital.Status,data$FY16GivingCat,data$Gender),1),3)
+```
+
+
+# 3. Statistical Modeling
+
+Based on the exploratory data analysis, we conjecture that class year, marital status, event attendence, factors representing prior contributions, and to a lesser extent degree and major will all reflect different likelihoods to contribute. Namely, each reflects some combination of earnings potential, university enthusiasm, and prior levels of generosity. We do not expect gender to directly have an effect, given that it shows little difference in its contingency with 2016 and is likely reflected with highly correlated variables such as degree and major. We expect earlier classes to be more likely to contribute, along with majors and degrees aligned with high earnings, e.g. MBA and PhDs. We similarly expect more in contributions from married individuals, and especially from those who attend alumni events and have given to the university previously.
+
+Because our team is tasked with predicting which 2016 giving bin in which the alumni most likely reside, we estimate a multinomial logistic regression to maximize the accuracy. We see each giving bin as distinct from each other, and particularly from the non-giving event, so estimating coefficients for each sub-model should produce the highest accuracy with the given data. We also estimate an ordered logistic regression in order to compare consistency of the statistical significance of our selected variables.
+
+##Initial Multinomial Logistic Regression Model
+
+Beginning with our full hypothesized model, we split our data into training and test datasets, with 800 observations (80%) used for model estimation and the remaining 200 for testing. This model's estimates converge after 90 iterations, with an initial AIC of 1,286.7 on the training sample. Checking the covariates for statistical significance, the log likelihood ratio test produces test statistics which are extremely significant for pre-2016 contribution count and amount (binned), with major showing borderline significance for this training sample. The above confusion matrix shows the model's predicted 2016 giving compared to the actual contributions made by our test sample. We note this initial error rate is approximately 34%, with 17 of those sample observations predicting no contribution when they actually gave between 1 and 100.
+```{r}
+#split train and test
+set.seed(437)
+sample <- sample.int(n = nrow(data), size = floor(.8*nrow(data)), replace = F)
+train <- data[sample, ]
+test  <- data[-sample, ]
+
+#full trained model
+ml_full <- multinom(formula = FY16GivingCat ~ Class.Year + Marital.Status + degree_bucket + major_bucket + 
+                      AttendenceEvent + pre16_give_cnt + pre16_bin, data = train)
+ml_full$call
+print("Full model AIC:", quote = F)
+ml_full$AIC
+Anova(ml_full)
+preds_full <- predict(ml_full, newdata = test)
+probs_full <- round(predict(ml_full, newdata = test, type = "probs"),4)
+test_full <- data.frame(test, preds_full, probs_full)
+print("Confusion Matrix:", quote = F)
+table(test_full$preds_full,test_full$FY16GivingCat, dnn = c("Predicted","Actual"))
+print("Error Rate:", quote = F)
+mean(as.character(test_full$preds_full) != as.character(test_full$FY16GivingCat), na.rm = T)
+```
+
+## Final Multinomial Model
+
+To improve the model's predictive power, we test whether the in-sample fit is improved when removing class year, marital status, and degree, and then performing a LRT test on class year to see whether it improves the model.
+```{r}
+ml_restr <- multinom(formula = FY16GivingCat ~ AttendenceEvent + 
+                       pre16_give_cnt + pre16_bin, data = train)
+ml_restr$call
+print("Restricted model AIC:", quote = F)
+ml_restr$AIC
+Anova(ml_restr)
+```
+
+Under the restricted model, the AIC falls to 1,204.3, with event attendance still significant by the LRT. We now compare this model with the inclusion of class year, but again find a non-significant Chi test statistic (p=0.44).
+```{r}
+#confirm class year does not help in-sample fit
+ml_class <- multinom(formula = FY16GivingCat ~ AttendenceEvent + pre16_give_cnt + 
+                         pre16_bin + Class.Year, data = train)
+print("Restricted model AIC with major:", quote = F)
+ml_class$AIC
+anova(ml_class,ml_restr)
+```
+
+We again test the model's predictive power on the test set, for which we see a very marginal improvement to 32.5%. This final model is both the simplest along with the smallest residual deviance and the lowest test error.
+```{r}
+#predictive power
+preds_restr <- predict(ml_restr, newdata = test)
+probs_restr <- round(predict(ml_restr, newdata = test, type = "probs"),4)
+test_restr <- data.frame(test, preds_restr, probs_restr)
+table(test_restr$preds_restr,test_restr$FY16GivingCat, dnn = c("Predicted","Actual"))
+mean(as.character(test_restr$preds_restr) != as.character(test_restr$FY16GivingCat), na.rm = T)
+```
+
+Looking at the coefficients to each sub-model, we see mostly an intuitive story with a couple of unexpected relationship. In particular, the odds of contributing in the [250,500) or \$500+ buckets go up by roughly 6 and 15 times, respectively, when someone attends the alumni event; those odds do not change drastically for those lower amounts under \$250. Somewhat inversely, when someone has given for the previous four years, their odds of contributing a non-zero amount less than 500 increases by roughly 25 times, whereas the odds go up by roughly 1.9 and 2.4 for the larger contribution amount buckets. In terms of the total amount an individual has given previously, people appear to tend toward their historical amounts. For example, if that amount totals less than 100, then that person is roughly 12 times more likely to give again in that lower range. Similarly, those who have given more than \$500 total are extremely likely to do so again, according to the model. However, we remain cautious of these odds considering the model still has a high error rate on the test data.
+```{r}
+round(exp(coefficients(ml_restr)),3)
+```
+
+## Using Proportional Odds Regression Model (Ordered Logistic)
+
+Lastly, for an additional test of robustness, we run our full model as an ordered logistic, which assumes proportional changes in odds as we compare giving bins. To our surprise, we see class year with strong statistical significance under the LRT, where we did not see significance before. We do, however, similarly get strong significance for total prior giving (binned); we lose strong significance in the previous giving count. We approach this model with caution as the choice of bins are different enough in range that they may not satisfy the assumption of proportional odds in this model, making our estimates unreliable.
+```{r}
+#proportional odds logistic model on full dataset
+ordered_lm <- clm(formula =  FY16GivingCat ~ Class.Year + Marital.Status + 
+                    degree_bucket + major_bucket + AttendenceEvent + 
+                    pre16_give_cnt + pre16_bin, data = train, link = "logit")
+ordered_lm$call
+ordered_lm$info
+Anova(ordered_lm)
+```
+
+
+# 4. Final Remarks
+
+While the model produces a fairly high error rate when predicting the five giving categories, it does have a number of notable strengths. Namely, the model is fairly simple and easy to interpret. It relies solely on information regarding prior donations and event attendance. The significance of these factors should be unsurprising to the administration - these findings are logically consistent with the notion that those who have given or have been previously engaged with the university (via event attendance) in the past are likely to contribute in the future. One inherent weakness in this conclusion is that it doesn't offer much insight into what turns a non-contributor into one that does. Because the model relies significantly on whether a person has donated in the past, it doesn't offer much perspective on which people to engage that have not donated in the past. 
+
+This model is far from perfect. As seen in the model's corresponding confusion matrix, the model incorrectly predicts the contribution category 32.5% of the time. This is significant and warrants further investigation. Importantly, however, the administration's primary concern should be with differentiation between potential contributors and non-contributors. Looking again to the confusion matrix we can see that the error rate in that regard is closer to 20%. 
+
+The most mistaken contributor vs. non-contributor category within this confusion matrix are alumni who are predicted to be non-contributors and are actually contributors in the [1,100) category. It is unfortunate to miss out on engaging these potential donors, but fortunately the dollar amount that would go unrealized is a little less significant given that these donors were not major contributors.
+
+The two major dimensions to our model are previous donations (amount and frequency) and event attendance. As a result, it may be useful to further explore the nature of this event to understand why it has such importance in the model. Does attendance indicate a propensity to engage with the university and be more apt to be involved with the university's future via donations? Or is there something about the event itself that convinces participants to donate or be more engaged in the university? If the truth is in the latter explanation, there could be additional information worth collecting to better understand what contributes to getting potential donors to attend the event (e.g. proximity to the event location). Further, we would want to see what events may have taken place on campus or initiatives announced over the previous four years that may have spurred greater giving from certain individuals, e.g. the announcement of a new planned science building or athletic arena. These future events could then be used in a targeted communications effort to reach those most likely to contribute based on that particular cause (e.g. former science students or season ticket holders, respectively).

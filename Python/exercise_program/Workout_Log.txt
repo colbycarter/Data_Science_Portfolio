@@ -1,0 +1,378 @@
+
+************************************************************
+               2017-03-12 - Workout by STEVEFIT
+************************************************************
+Gym - Cardio - Stair-stepper
+Summary [Distance - Time - Avg. Speed - Calories Burned]:
+        52.00 flights
+        30 minutes
+        104.0 flights per hour (avg.)
+        300 calories burned (est.)
+
+
+************************************************************
+               2017-03-12 - Workout by STEVEFIT
+************************************************************
+Gym - Cardio - Heavybag
+Summary [Time - Calories Burned]:
+        0 mins - 1 calories burned (est.)
+
+
+************************************************************
+               2017-03-12 - Workout by STEVEFIT
+************************************************************
+Gym - Cardio - Heavybag
+Summary [Time - Calories Burned]:
+        0 mins - 3 calories burned (est.)
+
+
+************************************************************
+               2017-03-12 - Workout by STEVEFIT
+************************************************************
+Home/Indoor - High-Intensity - Selected
+Summary [Exercise - Rounds x Repetitions - Calories Burned]:
+        Push-ups            3x10
+        Pull-ups            3x10
+        Speed squats        3x10
+        DB T's              3x10
+        45 calories burned (est.)
+
+
+************************************************************
+               2017-03-12 - Workout by STEVEFIT
+************************************************************
+Home/Indoor - High-Intensity - Random
+Summary [Exercise - Rounds x Repetitions - Calories Burned]:
+        DB shoulder press   3x10
+        Diamond push-ups    3x10
+        Push-ups            3x10
+        Sit-ups             3x10
+        Pull-ups            3x10
+        Speed squats        3x10
+        DB curls            3x10
+        DB shrugs           3x10
+        360 calories burned (est.)
+
+
+************************************************************
+               2017-03-12 - Workout by STEVEFIT
+************************************************************
+Home/Indoor - High-Intensity - Random
+Summary [Exercise - Rounds x Repetitions - Calories Burned]:
+        Diamond push-ups    10x8
+        Lunges (alternating)10x8
+        DB T's              10x8
+        Speed squats        10x8
+        Pull-ups            10x8
+        DB shoulder press   10x8
+        Sit-ups             10x8
+        DB curls            10x8
+        Kettlebell swings   10x8
+        Push-ups            10x8
+        DB shrugs           10x8
+        1320 calories burned (est.)
+
+
+************************************************************
+               2017-03-12 - Workout by STEVEFIT
+************************************************************
+Home/Indoor - High-Intensity - Random
+Summary [Exercise - Rounds x Repetitions - Calories Burned]:
+        DB shrugs           2x12
+        Push-ups            2x12
+        DB T's              2x12
+        Pull-ups            2x12
+        144 calories burned (est.)
+
+
+************************************************************
+               2017-03-12 - Workout by STEVEFIT
+************************************************************
+Outdoor - Cardio - Running
+Summary [Distance - Time - Avg. Speed - Calories Burned]:
+        0.06 miles
+        1 minutes
+        6.5 miles per hour (avg.)
+
+        3 calories burned (est.)
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Outdoor - Cardio - Running
+Summary [Distance - Time - Avg. Speed - Calories Burned]:
+        0.03 miles
+        1 minutes
+        2.4 miles per hour (avg.)
+
+        1 calories burned (est.)
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Outdoor - Cardio - Bicycling
+Summary [Distance - Time - Avg. Speed - Calories Burned]:
+        2.00 miles
+        5 minutes
+        23.8 miles per hour (avg.)
+        285 calories burned (est.)
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Outdoor - Cardio - Sprints
+Summary [Distance - Rounds - Times - Avg. Speed - Calories Burned]:
+        40 meters - 3 rounds
+        6.20s, 14.4mph (avg.)
+        6.10s, 14.7mph (avg.)
+        5.95s, 15.0mph (avg.)
+        60 calories burned (est.)
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Outdoor - Cardio - Pick-up Basketball
+Summary [Duration - Calories Burned]:
+        2.0 minutes
+        8 calories burned (est.)
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Gym - Cardio - Treadmill
+Summary [Distance - Time - Avg. Speed - Calories Burned]:
+        2.94 miles
+        20 minutes
+        8.8 miles per hour (avg.)
+        222 calories burned (est.)
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Gym - Cardio - Stair-stepper
+Summary [Distance - Time - Avg. Speed - Calories Burned]:
+        78.00 flights
+        30 minutes
+        156.0 flights per hour (avg.)
+        300 calories burned (est.)
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Gym - Cardio - Heavybag
+Summary [Time - Calories Burned]:
+        1 mins - 4 calories burned (est.)
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Gym - Cardio - Eliptical
+Summary [Distance - Time - Avg. Speed - Calories Burned]:
+        1.97 miles
+        20 minutes
+        5.9 miles per hour (avg.)
+        116 calories burned (est.)
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Gym - Weights - Back/Biceps
+Summary [Exercise - Weight - Reps (Target) - 1RM - Result]:
+Pull-ups (Weighted):
+        55 lbs - 3 (3)
+        55 lbs - 3 (3)
+        55 lbs - 2 (3)
+        1RM = 59.5
+        Next workout: Re-try at current weights
+
+Deadlifts:
+        225 lbs - 3 (3)
+        225 lbs - 3 (3)
+        225 lbs - 4 (3)
+        1RM = 250.0
+        Next workout: Target met--Go up 5 lbs.!
+
+Barbell rows:
+        165 lbs - 3 (3)
+        165 lbs - 3 (3)
+        165 lbs - 6 (3)
+        1RM = 194.1
+        Next workout: Target met--Go up 5 lbs.!
+
+Barbell curls:
+        75 lbs - 3 (3)
+        75 lbs - 3 (3)
+        75 lbs - 3 (3)
+        1RM = 81.1
+        Next workout: Target met--Go up 5 lbs.!
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Gym - Weights - Legs & Shoulders
+Summary [Exercise - Weight - Reps (Target) - 1RM - Result]:
+Squats:
+        135 lbs - 8 (8)
+        145 lbs - 6 (6)
+        155 lbs - 4 (4)
+        145 lbs - 6 (6)
+        135 lbs - 12 (8)
+        1RM = 180.0
+        Next workout: Target met--Go up 5 lbs.!
+
+Military press:
+        95 lbs - 8 (8)
+        100 lbs - 6 (6)
+        105 lbs - 4 (4)
+        100 lbs - 8 (6)
+        95 lbs - 9 (8)
+        1RM = 125.0
+        Next workout: Target met--Go up 5 lbs.!
+
+Leg extensions:
+        95 lbs - 8 (8)
+        100 lbs - 8 (6)
+        105 lbs - 8 (4)
+        100 lbs - 8 (6)
+        95 lbs - 15 (8)
+        1RM = 131.2
+        Next workout: Target met--Go up 5 lbs.!
+
+Barbell shrugs:
+        115 lbs - 8 (8)
+        125 lbs - 8 (6)
+        135 lbs - 6 (4)
+        125 lbs - 8 (6)
+        115 lbs - 10 (8)
+        1RM = 158.8
+        Next workout: Target met--Go up 5 lbs.!
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Gym - Weights - Chest/Triceps
+Summary [Exercise - Weight - Reps (Target) - 1RM - Result]:
+Bench press:
+        135 lbs - 10 (10)
+        145 lbs - 8 (8)
+        155 lbs - 6 (6)
+        165 lbs - 6 (4)
+        1RM = 194.1
+        Next workout: Target met--Go up 5 lbs.!
+
+Incline bench:
+        135 lbs - 10 (10)
+        145 lbs - 7 (8)
+        155 lbs - 5 (6)
+        165 lbs - 3 (4)
+        1RM = 180.0
+        Next workout: Re-try at current weights
+
+Dumbell flies:
+        25 lbs - 10 (10)
+        28 lbs - 10 (8)
+        30 lbs - 10 (6)
+        32 lbs - 10 (4)
+        1RM = 43.3
+        Next workout: Target met--Go up 5 lbs.!
+
+(Weighted) Dips:
+        35 lbs - 10 (10)
+        38 lbs - 8 (8)
+        40 lbs - 6 (6)
+        42 lbs - 4 (4)
+        1RM = 47.2
+        Next workout: Target met--Go up 5 lbs.!
+
+
+************************************************************
+               2017-03-13 - Workout by STEVEFIT
+************************************************************
+Home/Indoor - High-Intensity - Selected
+Summary [Exercise - Rounds x Repetitions - Calories Burned]:
+        Push-ups            2x8
+        Pull-ups            2x8
+        DB curls            2x8
+        Sit-ups             2x8
+        96 calories burned (est.)
+
+
+************************************************************
+               2017-03-14 - Workout by STEVEFIT
+************************************************************
+Home/Indoor - High-Intensity - Random
+Summary [Exercise - Rounds x Repetitions - Calories Burned]:
+        DB shoulder press   3x10
+        Speed squats        3x10
+        Sit-ups             3x10
+        Kettlebell swings   3x10
+        180 calories burned (est.)
+
+
+************************************************************
+               2017-03-14 - Workout by STEVEFIT
+************************************************************
+Home/Indoor - High-Intensity - Random
+Summary [Exercise - Rounds x Repetitions - Calories Burned]:
+        Speed squats        3x10
+        Pull-ups            3x10
+        Diamond push-ups    3x10
+        135 calories burned (est.)
+
+
+************************************************************
+               2017-03-14 - Workout by STEVEFIT
+************************************************************
+Home/Indoor - High-Intensity - Random
+Summary [Exercise - Rounds x Repetitions - Calories Burned]:
+        DB shrugs           3x10
+        Speed squats        3x10
+        Diamond push-ups    3x10
+        135 calories burned (est.)
+
+
+************************************************************
+               2017-03-14 - Workout by STEVEFIT
+************************************************************
+Gym - Weights - Chest/Triceps
+Summary [Exercise - Weight - Reps (Target) - 1RM - Result]:
+Bench press:
+        135 lbs - 10 (10)
+        145 lbs - 8 (8)
+        155 lbs - 6 (6)
+        165 lbs - 5 (4)
+        1RM = 188.6
+        Next workout: Target met--Go up 5 lbs.!
+
+Incline bench:
+        100 lbs - 1 (10)
+        110 lbs - 1 (8)
+        120 lbs - 1 (6)
+        130 lbs - 1 (4)
+        1RM = 130.0
+        Next workout: Re-try at current weights
+
+Dumbell flies:
+        1 lbs - 1 (10)
+        4 lbs - 1 (8)
+        6 lbs - 1 (6)
+        8 lbs - 1 (4)
+        1RM = 8.5
+        Next workout: Re-try at current weights
+
+(Weighted) Dips:
+        1 lbs - 1 (10)
+        4 lbs - 1 (8)
+        6 lbs - 1 (6)
+        8 lbs - 1 (4)
+        1RM = 8.5
+        Next workout: Re-try at current weights
+
