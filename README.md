@@ -9,11 +9,11 @@ This repository contains a sample of Colby's data science project work from UC B
 
 4. _NLP_. A clustering and topic-modeling exercise using NLP features on the Enron email dataset to see whether pockets of fraudulent or suspicious language can be identified more generally.
 
-5. _Python_. Object-based programming for workouts and data exploration and visualization using pandas.
+5. _Data Engineering_. An analysis of San Francisco bike-share datasets using Google BigQuery from the command line in Jupyter notebook.
 
-6. _Research Design_. Research on areas of opportunity for using data and algorithms to assist with real-world problems like transit congestion and crime prevention.
+6. _Python_. Object-based programming for workouts and data exploration and visualization using pandas.
 
-7. _Data Engineering_. (work in progress)
+7. _Research Design_. Research on areas of opportunity for using data and algorithms to assist with real-world problems like transit congestion and crime prevention.
 
 
 Thank you for visiting,
