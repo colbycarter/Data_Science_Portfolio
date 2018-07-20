@@ -1,0 +1,3 @@
+### Abstract
+
+In this paper, we attempt to test several semi-supervised learning methods to evaluate the potential for deception-detection in the now public Enron emails. Our motivation comes from the not-so-infrequent attempts by individuals and company leaders to mislead and cover up harmful information and deceit, whether those be insureds trying to profit from fraudulent claims or executives misleading investors in order to line their pockets. We draw upon several studies on deceptive language and expand on the usual N-gram features with semi-supervised learning in order to generate clusters of suspicious looking emails and topics similar to those identified by targeted heuristics.
