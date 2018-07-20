@@ -1,5 +1,12 @@
-# Data Science Portfolio
-This repository contains a sample of Colby's data science project work from UC Berkeley MIDS graduate program. Key projects have been selected from the following course subjects:
+### Colby Carter
+
+### Data Science Portfolio
+
+colby.carter@berkeley.edu
+
+Master's in Data Science (in progress - expected Spring 2019)
+
+This repository contains a sample of Colby's data science project work from UC Berkeley MIDS graduate program. Key projects have been selected from the following completed course subjects:
 
 1. _Statistics_. Sample reports using statistical modeling in R, including classical OLS regression, multinomial logistic regression, and SARIMA modeling.
 
@@ -15,9 +22,3 @@ This repository contains a sample of Colby's data science project work from UC B
 
 7. _Research Design_. Research on areas of opportunity for using data and algorithms to assist with real-world problems like transit congestion and crime prevention.
 
-
-Thank you for visiting,
-
-Colby Carter
-
-MIDS (anticipated Spring 2019)
