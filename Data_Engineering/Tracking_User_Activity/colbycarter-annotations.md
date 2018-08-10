@@ -1,6 +1,6 @@
-# Colby's annotations, Assignment 8
+# Tracking User Activity Project
 
-Summary: in this exercise, we use kafka and spark containers to consume messages from our created topic, and view our JSON assessments data as a pyspark dataframe with the JSON objects represented as strings for ease of reading. 
+**Summary**: in this exercise, we use kafka and spark containers to consume messages from our created topic, and view our JSON assessments data as a pyspark dataframe with the JSON objects represented as strings for ease of reading. 
 
 ## Here we open the assignment directory in our mids205 container and copy the docker-compose file edited in class.
 
