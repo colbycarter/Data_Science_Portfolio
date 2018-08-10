@@ -1,5 +1,4 @@
-# Project 3 Setup
-## Author: Colby Carter
+# Tracking Site Usage & Storing Events in Hadoop
 
 
 ## Situation:
@@ -7,33 +6,19 @@
 - Your latest mobile game has two events you're interested in tracking: 
 - `buy a sword` & `join guild`...
 - Each has metadata
-
-## Project 3 Task
 - Instrument your API server to catch and analyze these two
 event types.
-- This task will be spread out over the last four assignments (9-12).
 
 ---
 
-# Assignment 12
 
 **Summary**: In this assignment, we create a simple game using a web API and log the events of the game to our kafka topic; consume them for viewing in a Spark dataframe; see that we can store, overwrite and filter our data as Hadoop parque files; and lastly pull our parquet files into Jupyter notebook.
 
 ## We begin by creating our docker cluster file with zookeeper, kafka and mids containers and spinning up the cluster.
 
 ```
-cp ~/w205/course-content/12-Storing-Data-III/docker-compose.yml .
 docker-compose up -d
 ```
-
-## We also copy in our python scripts for extracting events to pyspark.
-
-```
-cp ~/w205/course-content/11-Storing-Data-III/extract_events.py .
-cp ~/w205/course-content/11-Storing-Data-III/separate_events.py .
-cp ~/w205/course-content/11-Storing-Data-III/transform_events.py .
-```
-
 
 ## Next we create our kafka topic which we call "events".
 
