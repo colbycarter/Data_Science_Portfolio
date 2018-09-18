@@ -4,7 +4,7 @@
 
 colby.carter@berkeley.edu
 
-Master's in Information and Data Science (in progress - expected Spring 2019)
+Master's in Information and Data Science (in progress - expected Spring 2019),
 University of California, Berkeley
 
 This repository contains a sample of Colby's data science project work from UC Berkeley's MIDS graduate program. Key projects have been selected from the following completed course subjects:
