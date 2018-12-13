@@ -1,5 +1,9 @@
 # Tracking User Activity Project
 
+## Author: Colby Carter
+
+
+
 **Summary**: in this exercise, we use kafka and spark containers to consume messages from our created topic, and view our JSON assessments data as a pyspark dataframe with the JSON objects represented as strings for ease of reading. 
 
 ## Here we open the assignment directory in our mids205 container and copy the docker-compose file edited in class.
@@ -182,9 +186,6 @@ print(first_message['sequences']['counts'])
 {'incomplete': 1, 'submitted': 4, 'incorrect': 1, 'all_correct': False, 'correct': 2, 'total': 4, 'unanswered': 0}
 ```
 
-
-
-# [ADD HADOOP STEPS HERE]
 
 ## We'll now write our string-cast messages object to our Hadoop temporary file system as parquet files.
 

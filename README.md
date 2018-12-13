@@ -4,9 +4,10 @@
 
 colby.carter@berkeley.edu
 
-Master's in Data Science (in progress - expected Spring 2019)
+Master's in Information and Data Science (in progress - expected Spring 2019),
+University of California, Berkeley
 
-This repository contains a sample of Colby's data science project work from UC Berkeley MIDS graduate program. Key projects have been selected from the following completed course subjects:
+This repository contains a sample of Colby's data science project work from UC Berkeley's MIDS graduate program. Key projects have been selected from the following completed course subjects:
 
 1. _Statistics_. Sample reports using statistical modeling in R, including classical OLS regression, multinomial logistic regression, and SARIMA modeling.
 
@@ -16,7 +17,7 @@ This repository contains a sample of Colby's data science project work from UC B
 
 4. _Natural Language Processing_. A clustering and topic-modeling exercise using NLP features on the Enron email dataset to see whether pockets of fraudulent or suspicious language can be identified more generally.
 
-5. _Data Engineering_. An analysis of San Francisco bike-share datasets using Google BigQuery from the command line in Jupyter notebook.
+5. _Data Engineering_. An analysis of San Francisco bike-share datasets using Google BigQuery from the command line in Jupyter notebook and building a data pipeline using kafka.
 
 6. _Python_. Object-based programming for workouts and data exploration and visualization using pandas.
 
