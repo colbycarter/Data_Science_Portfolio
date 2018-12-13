@@ -1,0 +1,1 @@
+Group project from MIDS course w261, Machine Learning at Scale. The purpose of the project was to build a scalable algorithm on Spark to predict the Click Through Rate (CTR) outcome in the 45 million user row Criteo training data. For this exercise, we chose to develop and parallelize a Factorization Machine as first described by Rendle (2010).  
