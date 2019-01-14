@@ -13,7 +13,7 @@ This repository contains a sample of Colby's data science project work from UC B
 
 2. _Experiment_. A survey-based experiment using random assignment that tested for a causal effect of references to the president on economic optimism.
 
-3. _Machine Learning_. A Kaggle classification problem using NLP tools in Python and generated features to predict whether written online requests for pizza delivery were satisfied.
+3. _Machine Learning_. A factorization machine built for parallelization in Spark, predicting the CTR for the full Criteo ad dataset. Also, a Kaggle classification problem using NLP tools in Python and generated features to predict whether written online requests for pizza delivery were satisfied.
 
 4. _Natural Language Processing_. A clustering and topic-modeling exercise using NLP features on the Enron email dataset to see whether pockets of fraudulent or suspicious language can be identified more generally.
 
