@@ -4,6 +4,8 @@
 
 colby.carter@berkeley.edu
 
+LinkedIn: https://www.linkedin.com/in/colby-carter-aa71a975/
+
 Master of Information and Data Science, completed May 2019
 University of California, Berkeley
 
