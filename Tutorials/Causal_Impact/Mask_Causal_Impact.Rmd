@@ -1,0 +1,266 @@
+---
+title: "Mask Mandate Causal Impact Study"
+author: "Colby Carter"
+date: "10/31/2020"
+output:
+  # pdf_document: default
+  html_document: default
+---
+
+
+# Abstract  
+
+In this study, we use Google's Causal Impact algorithm to estimate key Covid-19 outcome metrics in unobserved, counterfactual scenarios where select countrywide mask mandates _not_ been employed. This analysis focuses on two European countries that adopted and largely complied with mask mandates several months into the pandemic: Germany with strong adoption by May (WSJ) and Switzerland requiring masks on public transit since July 6th. These countries are particularly useful because we can observe several nearby countries that both employed early and widespread adoption of masks early on (e.g. Italy) while others such as the Scandinavian countries did not. With the Causal Impact model, these other countries' outcomes, plus social mobility data and other controls, can be used to predict the estimated non-mask adoption counterfactual. This does require strong assumptions, including that the mask "treatment" has no effect on the predictors. Therefore, this approach can help identify a difference where one may exist, but it does not fully isolate the treatment effect like a well-designed RCT would; Denmark conducted a large experiment on masks and Covid-19 that ended in August, but no publications have yet been willing to print.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+# install.packages("pdflatex", dependencies = T)
+library(CausalImpact)
+library(dplyr)
+```
+
+
+# Data  
+
+The data for each model can include:
+
+- 7-day rolling average of cases, tests, hospitalizations, ICU usage and deaths (where available) by country
+- countries' Apple social mobility scores for driving, transit and walking
+- EU Global Dow Stock Index
+
+Countries include:
+
+- Italy (early mask adoption)
+- Sweden (no masks)
+- Denmark (no masks)
+- Norway (no masks)
+
+The data begin on January 24, 2020 and go through October 25. Most measured variables do not produce values until roughly March 1. Note that toward the end of the period in October, many European countries experience rising case levels that appear to exceed earlier periods, though this metric does not control for testing and unobserved asymptomatic cases.
+
+```{r, echo=FALSE}
+countryDF <- read.csv("Masks_CI_data.csv", sep = ",", header = T)
+head(countryDF)  # data thru 10/25
+```
+
+Note: remove France--it's confounding due to mask adoption midway
+
+#### Mask mandate start dates - add five days of lag
+Germany = 5/1 = 99
+Switzerland = 7/1 = 160
+
+
+#### Data periods
+1 = 1/24
+38 = 3/1
+252 = 10/1
+
+
+
+# Switzerland
+
+We begin with estimating outcomes in Switzerland, which enacted a mask mandate for public transportation plus indoors in key public spaces (e.g. grocery stores) in two populated regions.
+
+```{r, echo=FALSE}
+swissDF <- select(countryDF, -c(date, day, week, sui_deaths, 
+                                ger_cases, ger_hosp, ger_deaths, ger_drive, ger_transit, ger_walk,
+                                fra_cases, fra_hosp, fra_icu, fra_deaths, fra_drive, fra_transit, fra_walk
+                                # us_cases, us_tests
+                                ))
+head(swissDF)
+```
+
+
+```{r, include=FALSE}
+# full - IGNORE
+pre.Swiss <- c(1, 159+7)
+post.Swiss <- c(160+7, 276)
+
+impactSwiss <- CausalImpact(swissDF, pre.Swiss, post.Swiss)
+plot(impactSwiss)
+```
+
+Beginning with the Causal Impact on Swiss cases the Covid-19 period of 3/1 through 10/24, the estimated counterfactual closely follows the observed time series through much of the summer until the period of the spike. Here, the model does a poor job of anticipating this acceleration given the predictor variables in the model. However, given that many of the other predictor countries, including Italy, also experience similar increases, the model does capture the late increase. The counterfactual series falling _below_ the observed for Switzerland suggests that the case increase trend would have been lower than under the mask policy, with an excess 25,000 cumulative cases; however this does not match intuition. One hypothesis could be that masking, whether or not providing personal protection, may lead to more social or "riskier" behavior than we would have observed. In any case, the model does not suggest that the large, late case increase would have been lower or avoided.
+
+
+```{r}
+# ignore pre-virus period up to 3/1
+covidStart <- 38
+
+lag <- 7  # lag mask start 
+pre.Swiss2 <- c(covidStart, 159+lag)  
+post.Swiss2 <- c(160+lag, 276)
+
+impactSwiss2 <- CausalImpact(swissDF, pre.Swiss2, post.Swiss2)
+plot(impactSwiss2)
+```
+
+
+One challenging assumption underlying Causal Impact is that other predictor variables may _not_ be affected by the "event," here a mask mandate. It is likely that if the masking has an effect on cases, and thus symptomatic infections, Swiss _testing_ is similarly affected by the policy. It could also follow that masking leads to different levels of social behavior (mobility), so we also run the algorithm without Swiss test volume and social mobility wherein we see a similar story, but with much larger error around our estimated counterfactual.
+
+```{r, include=FALSE}
+# no Swiss tests control
+swiss_excl_tests <- select(swissDF, -c(sui_tests))
+
+impactSwiss3 <- CausalImpact(swiss_excl_tests, pre.Swiss2, post.Swiss2)
+plot(impactSwiss3)
+```
+
+```{r, echo=TRUE}
+# without Swiss tests and mobility scores
+swiss_excl_soc <- select(swissDF, -c(sui_tests, sui_drive, sui_transit, sui_walk))
+
+impactSwiss3.2 <- CausalImpact(swiss_excl_soc, pre.Swiss2, post.Swiss2)
+plot(impactSwiss3.2)
+```
+
+
+```{r, include=FALSE}
+# remove enormous late spike
+swissEnd <- 251
+
+swissNoOct <- swissDF[1:swissEnd,]
+pre.Swiss4 <- c(38, 159+7)
+post.Swiss4 <- c(160+7, swissEnd)
+
+impactSwiss4 <- CausalImpact(swissNoOct, pre.Swiss4, post.Swiss4)
+plot(impactSwiss4)
+```
+
+
+```{r, include=FALSE}
+#without late spike or test volume control
+impactSwiss5 <- CausalImpact(select(swissNoOct, -c(sui_tests)), pre.Swiss4, post.Swiss4)
+plot(impactSwiss5)
+```
+
+
+```{r, include=FALSE}
+# predict DEATHS
+swissDeaths <- select(countryDF, -c(date, day, week, sui_cases, sui_tests,
+                                    ger_cases, ger_hosp, ger_deaths, ger_drive, ger_transit, ger_walk,
+                                    fra_cases, fra_hosp, fra_icu, fra_deaths, fra_drive, fra_transit, fra_walk,
+                                    us_cases, us_tests))
+head(swissDeaths)
+```
+
+
+More important than confirmed cases, we also have Swiss deaths attributed to Covid-19, which are less noisy, or incomplete, due to (lack of early) testing. Here we observe a counterfacture time series indistinguishable from the true, masked level, which stayed close to zero daily deaths after the original March surge.
+
+```{r}
+lag6 <- 30  # lag mask start 
+pre.Swiss6 <- c(covidStart, 159+lag6)  
+post.Swiss6 <- c(160+lag6, 276)
+
+impactSwiss6 <- CausalImpact(swissDeaths, pre.Swiss6, post.Swiss6)
+plot(impactSwiss6)
+```
+
+
+
+# Germany  
+
+The early European Covid-19 model of Germany offers a potentially useful test subject wherein the country was a fairly early mask adopter on May 1 _following_ the initial European surge that hit many neighboring countries (e.g. Italy) but well before the fall return.
+
+```{r, echo=FALSE}
+pre.Germany <- c(covidStart, 98+lag)
+post.Germany <- c(99+lag, 276)
+
+germanyDF <- cbind(countryDF$ger_cases, select(countryDF, -c(date, day, week, 
+                                                             ger_cases, ger_hosp, ger_deaths,
+                                                             sui_cases, sui_deaths, sui_tests, sui_transit, sui_walk, sui_drive,
+                                                             fra_cases, fra_hosp, fra_icu, fra_deaths, fra_drive, fra_transit, fra_walk
+                                                             # us_cases, us_tests
+                                                             )))
+
+names(germanyDF)[names(germanyDF)=="countryDF$ger_cases"] <- "ger_cases"
+head(germanyDF)
+```
+
+Similarly to Swiss cases but with fewer anticipated late cases, much of the steady case volume follows the estimated maskless scenario closely, but not once the fall case volume begins to climb rapidly. Based on the experiences of the surrounding fully masked (Italy) and non-masked Scandinavian countries, which include late fall surges, this model still does not expect a late case surge in the maskless counterfactual, surprisingly. The model suggests cases therefore rise higher than they would have, say, like the Scandinavian countries, however this again does not match intuition unless behavior became much more interactive in Germany while still complying with mask-wearing. Keep in mind, these models do factor in social mobility of these countries, which like test frequency, could be influenced by the masking intervention (i.e. more socializing with heightened sense of security.)
+
+```{r}
+impactGermany <- CausalImpact(germanyDF, pre.Germany, post.Germany)
+plot(impactGermany)
+```
+
+A better metric, less reliant on testing, is hospitalizations, which Germany reports once weekly. Here we impute a smoothed daily hospitalization count and use similar predictors.
+
+```{r}
+# Germany HOSPITALIZATIONS
+# note: this metric is weekly, and thus a smoothed value; must be cut off at 10/10
+germanyHosp <- cbind(countryDF$ger_hosp, select(countryDF, -c(date, day, week, 
+                                                             ger_cases, ger_hosp, ger_deaths,
+                                                             sui_cases, sui_deaths, sui_tests, sui_transit, sui_walk, sui_drive,
+                                                             fra_cases, fra_hosp, fra_icu, fra_deaths, fra_drive, fra_transit, fra_walk
+                                                             # us_cases, us_tests
+                                                             )))
+
+names(germanyHosp)[names(germanyHosp)=="countryDF$ger_hosp"] <- "ger_hosp"
+
+germHospCutoff <- 261  # 10/10 hospital cutoff
+germanyHosp <- germanyHosp[1:germHospCutoff,]
+
+head(germanyHosp)
+```
+
+
+With this model, we see no discernible difference between the observed and estimated maskless hospitalization counts, which are steady and low throughout the period.
+
+```{r}
+lag2 <- 10  # typical days to hospitalization from initial infection
+pre.Germany2 <- c(covidStart, 98+lag2)
+post.Germany2 <- c(99+lag2, 276)
+
+impactGermany2 <- CausalImpact(germanyHosp, pre.Germany2, post.Germany2)
+plot(impactGermany2)
+```
+
+
+```{r, echo=FALSE}
+# Germany DEATHS
+germanyDeaths <- cbind(countryDF$ger_deaths, select(countryDF, -c(date, day, week, 
+                                                             ger_cases, ger_hosp, ger_deaths,
+                                                             sui_cases, sui_deaths, sui_tests, sui_transit, sui_walk, sui_drive,
+                                                             fra_cases, fra_hosp, fra_icu, fra_deaths, fra_drive, fra_transit, fra_walk,
+                                                             us_cases, us_tests)))
+
+names(germanyDeaths)[names(germanyDeaths)=="countryDF$ger_deaths"] <- "ger_deaths"
+
+head(germanyDeaths)
+```
+
+
+```{r}
+lag3 <- 30  # typical days to hospitalization from initial infection
+pre.Germany3 <- c(covidStart, 98+lag3)
+post.Germany3 <- c(99+lag3, 276)
+
+impactGermany3 <- CausalImpact(germanyDeaths, pre.Germany3, post.Germany3)
+plot(impactGermany3)
+```
+
+
+# Conclusion
+
+While direct conclusions cannot be drawn from this analysis due to the confoundedness of mask mandates, societal attitudes and adoption, and the seasonal nature of coronavirus spread, Causal Impact offers an attempt at controlling for independent trend variables and predict outcomes but-for a treatment--in this case, government mandated mask-wearing. This selection of control variables where mask-wearing was not heavily adopted suggests no effect on several covid outcomes, or even a worsening--a hypothesis could be a false sense of protection afforded by the intervention--however, this algorithm is likely insufficient, like many observational or even randomized studies (Denmark without double-blind option), to prove a meaningful causal effect.
+
+
+
+
+
+
+## Sources
+
+Apple Mobility Trends Reports, https://covid19.apple.com/mobility
+
+Covid-19 Explorer, WHO, https://worldhealthorg.shinyapps.io/covid/
+
+Global Dow EU, https://www.investing.com/indices/the-global-dow-eur-historical-data
+
+"Masks Could Help Stop Coronavirus. So Why Are They Still Controversial?", WSJ, 29 June 2020, https://www.wsj.com/articles/masks-could-help-stop-coronavirus-so-why-are-they-still-controversial-11593336601
+
+"Coronavirus: the situation in Switzerland", SwissInfo, 11 November 2020, https://www.swissinfo.ch/eng/society/covid-19_coronavirus--the-situation-in-switzerland/45592192
