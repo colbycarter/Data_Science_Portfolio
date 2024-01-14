@@ -2,9 +2,9 @@
 
 ### Data Science Portfolio
 
-Email: colby.carter@berkeley.edu
-LinkedIn: https://www.linkedin.com/in/colby-carter-aa71a975/
-Social Media: @colbycartertn
+Email: colby.carter@berkeley.edu    
+LinkedIn: https://www.linkedin.com/in/colby-carter-aa71a975/    
+Social Media: @colbycartertn    
 
 Master of Information and Data Science, completed May 2019    
 University of California, Berkeley
