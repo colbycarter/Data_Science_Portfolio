@@ -156,7 +156,7 @@ class UTMC_doc_profile_scraper:
     def save_dataset(self):
         print(self.doctorDF["Specialty"].describe())
         self.doctorDF.to_csv(
-            "C:/Users/Colby/Documents/GitHub/health_finder/my-health-agency/Python/Output/Data/UTMC_doctor_profiles.csv",
+            "./Data/UTMC_doctor_profiles.csv",
             index=False)
 
 
