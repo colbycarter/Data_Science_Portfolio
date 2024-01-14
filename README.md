@@ -2,14 +2,14 @@
 
 ### Data Science Portfolio
 
-colby.carter@berkeley.edu
-
+Email: colby.carter@berkeley.edu
 LinkedIn: https://www.linkedin.com/in/colby-carter-aa71a975/
+Social Media: @colbycartertn
 
-Master of Information and Data Science, completed May 2019
+Master of Information and Data Science, completed May 2019    
 University of California, Berkeley
 
-This repository contains a sample of Colby's data science project work from UC Berkeley's MIDS graduate program. Key projects have been selected from the following completed course subjects:
+This repository contains a sample of Colby's data science project work from UC Berkeley's MIDS graduate program, plus personal tutorials on data science tools. Key projects have been selected from the following completed course subjects:
 
 0. _Capstone_. This master's culminated in a group project in which our team built a web app-based product that guides the collection of mountain bike accelerometer data and generates component-level model predictions to proactively identify part degradation and necessary maintenance (Spring 2019).
 
@@ -26,4 +26,6 @@ This repository contains a sample of Colby's data science project work from UC B
 6. _Python_. Object-based programming for workouts and data exploration and visualization using pandas (Spring 2017).
 
 7. _Research Design_. Research on areas of opportunity for using data and algorithms to assist with real-world problems like transit congestion and crime prevention (Spring 2017).
+
+8. _Tutorials_. Post-Berkeley demonstrations of data science tools explored for personal or professional interest, including webscraping, search engine and Causal Impact (>2019).
 
